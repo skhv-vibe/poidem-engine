@@ -1,0 +1,5 @@
+{
+  "permissions": {
+    "additionalDirectories": ["../poidem-content", "../leisure-match-vault"]
+  }
+}

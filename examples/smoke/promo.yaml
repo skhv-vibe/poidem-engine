@@ -1,0 +1,20 @@
+# Пробный заказ: клипы-заглушки, пути от папки заказа (pnpm run smoke).
+version: 1
+format: listicle
+reel: 2026-11-smoke
+hook:
+  text: "куда сходить вдвоём без брони"
+  plate: lime
+items:
+  - name: "Кино на крыше"
+    district: "Петроградская"
+    clips:
+      - { src: smoke/a.mp4, in: 0, out: 2 }
+      - { src: smoke/b.mp4, in: 1 }
+  - name: "Джаз во дворе-колодце"
+    clips: [{ src: smoke/b.mp4 }]
+  - name: "Кофейня с пластинками"
+    clips: [{ src: smoke/c.mp4 }]
+demo: { src: smoke/demo.mp4, in: 0, out: 3 }
+end:
+  line: "свайпай — вечер решён"

@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Заказ на рилс «Пойдём» (promo.yaml)",
+  "description": "Пути к файлам указываются от корня poidem-content. Контракт: docs/contract.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "format", "reel", "hook", "items", "end"],
+  "properties": {
+    "version": { "const": 1 },
+    "format": { "enum": ["listicle"] },
+    "reel": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[a-z0-9-]+$" },
+    "music": { "type": "string" },
+    "hook": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "plate": { "enum": ["lime", "sticker"], "default": "lime" }
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "clips"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 40 },
+          "district": { "type": "string", "maxLength": 30 },
+          "clips": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/clip" } }
+        }
+      }
+    },
+    "demo": { "$ref": "#/definitions/clip" },
+    "end": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line"],
+      "properties": { "line": { "type": "string", "minLength": 1, "maxLength": 40 } }
+    },
+    "requests": { "type": "array", "items": { "type": "string" } }
+  },
+  "definitions": {
+    "clip": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["src"],
+      "properties": {
+        "src": { "type": "string", "minLength": 1 },
+        "in": { "type": "number", "minimum": 0 },
+        "out": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    }
+  }
+}

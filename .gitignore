@@ -1,0 +1,10 @@
+node_modules/
+.env
+out/
+.cache/
+*.mp4
+*.wav
+*.mov
+*.mp3
+.DS_Store
+examples/smoke/smoke/

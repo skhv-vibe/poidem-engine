@@ -1,5 +1,6 @@
 // Озвучка ролика через ElevenLabs: voice.mp3 и voice.json (тайминги слов для субтитров) в папке ролика.
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import YAML from 'yaml';
 import { resolveOrder } from './lib/order.ts';
@@ -57,6 +58,10 @@ const data = (await res.json()) as {
   alignment: { characters: string[]; character_start_times_seconds: number[]; character_end_times_seconds: number[] };
 };
 writeFileSync(mp3, Buffer.from(data.audio_base64, 'base64'));
+// Громкость под Reels: −14 LUFS, пик −1,5 dBTP. Тайминги слов не меняются.
+const tmp = mp3.replace(/\.mp3$/, '.norm.mp3');
+execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', mp3, '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11', '-ar', '44100', '-b:a', '192k', tmp]);
+renameSync(tmp, mp3);
 
 // Слова из посимвольной разметки: слово — подряд идущие непробельные символы.
 const a = data.alignment;

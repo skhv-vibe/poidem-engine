@@ -16,7 +16,8 @@
       "required": ["text"],
       "properties": {
         "text": { "type": "string", "minLength": 1, "maxLength": 60 },
-        "plate": { "enum": ["lime", "sticker"], "default": "lime" }
+        "plate": { "enum": ["lime", "sticker"], "default": "lime" },
+        "clip": { "$ref": "#/definitions/clip" }
       }
     },
     "items": {

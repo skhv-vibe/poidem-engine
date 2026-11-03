@@ -6,7 +6,7 @@ export type PromoOrder = {
   format: 'listicle';
   reel: string;
   music?: string;
-  hook: { text: string; plate?: 'lime' | 'sticker' };
+  hook: { text: string; plate?: 'lime' | 'sticker'; clip?: ClipSrc };
   items: { name: string; district?: string; clips: ClipSrc[] }[];
   demo?: ClipSrc;
   end: { line: string };

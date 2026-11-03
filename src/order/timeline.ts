@@ -5,6 +5,7 @@ import type { PromoOrder } from './types.ts';
 export type Segment = { from: number; duration: number };
 export type ListicleTimeline = {
   hook: Segment;
+  ownHook: boolean;
   items: (Segment & { number: number; clips: Segment[] })[];
   swipeFrames: number;
   demo: Segment | null;
@@ -16,9 +17,11 @@ const f = (s: number) => Math.round(s * FPS);
 
 export function listicleTimeline(order: PromoOrder): ListicleTimeline {
   const n = order.items.length;
-  let cursor = 0;
+  // Свой клип у хука: хук идёт отдельной сценой до мест. Без клипа хук лежит поверх первого места.
+  const ownHook = !!order.hook.clip;
+  let cursor = ownHook ? f(LISTICLE.hook) : 0;
   const items = order.items.map((item, i) => {
-    const duration = f(LISTICLE.perItem) + (i === 0 ? f(LISTICLE.hook) : 0);
+    const duration = f(LISTICLE.perItem) + (i === 0 && !ownHook ? f(LISTICLE.hook) : 0);
     const per = Math.floor(duration / item.clips.length);
     const clips = item.clips.map((_, k) => ({
       from: k * per,
@@ -32,7 +35,7 @@ export function listicleTimeline(order: PromoOrder): ListicleTimeline {
   const demo = order.demo ? { from: cursor, duration: f(clipLength(order.demo) ?? LISTICLE.demo) } : null;
   if (demo) cursor += demo.duration;
   const end = { from: cursor, duration: f(LISTICLE.end) };
-  return { hook: { from: 0, duration: f(LISTICLE.hook) }, items, swipeFrames, demo, end, total: cursor + end.duration };
+  return { hook: { from: 0, duration: f(LISTICLE.hook) }, ownHook, items, swipeFrames, demo, end, total: cursor + end.duration };
 }
 
 function clipLength(c: { in?: number; out?: number }): number | null {

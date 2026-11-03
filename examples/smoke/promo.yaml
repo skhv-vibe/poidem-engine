@@ -5,6 +5,7 @@ reel: 2026-11-smoke
 hook:
   text: "куда сходить вдвоём без брони"
   plate: lime
+  clip: { src: smoke/c.mp4, in: 2 }
 items:
   - name: "Кино на крыше"
     district: "Петроградская"

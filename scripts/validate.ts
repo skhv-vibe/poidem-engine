@@ -1,7 +1,7 @@
 // Проверка заказа promo.yaml: схема, файлы, длина клипов.
 import { checkOrder, resolveOrder } from './lib/order.ts';
 
-const arg = process.argv[2];
+const arg = process.argv.slice(2).find((a) => a !== '--');
 if (!arg || arg === '--help') {
   console.log(`Проверяет заказ promo.yaml по схеме schema/promo.schema.json и наличие файлов.
 

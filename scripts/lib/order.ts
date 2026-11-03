@@ -74,6 +74,7 @@ export function checkOrder(file: string): Check {
   order.items.forEach((item, i) => {
     tl.items[i].clips.forEach((seg, k) => checkClip(item.clips[k], seg.duration / FPS, `места[${i}] «${item.name}», клип ${k + 1}`));
   });
+  if (order.hook.clip) checkClip(order.hook.clip, tl.hook.duration / FPS, 'хук');
   if (order.demo && tl.demo) checkClip(order.demo, tl.demo.duration / FPS, 'демо');
   if (order.music) {
     if (existsSync(join(base, order.music))) media.push(order.music);

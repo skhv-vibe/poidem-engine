@@ -30,6 +30,13 @@ export const Listicle: React.FC<{ order: PromoOrder }> = ({ order }) => {
         </Sequence>
       )}
 
+      {tl.ownHook && order.hook.clip && (
+        <Sequence durationInFrames={tl.hook.duration} name="Хук">
+          <Clip clip={order.hook.clip} />
+          <Hook text={order.hook.text} plate={order.hook.plate ?? 'lime'} />
+        </Sequence>
+      )}
+
       {tl.items.map((seg, i) => {
         const item = order.items[i];
         const body = (
@@ -39,10 +46,10 @@ export const Listicle: React.FC<{ order: PromoOrder }> = ({ order }) => {
                 <Clip clip={item.clips[k]} />
               </Sequence>
             ))}
-            <Sequence from={i === 0 ? tl.hook.duration : 0} name={`Номер ${seg.number}`}>
+            <Sequence from={i === 0 && !tl.ownHook ? tl.hook.duration : 0} name={`Номер ${seg.number}`}>
               <ItemLabel number={seg.number} name={item.name} district={item.district} />
             </Sequence>
-            {i === 0 && (
+            {i === 0 && !tl.ownHook && (
               <Sequence durationInFrames={tl.hook.duration} name="Хук">
                 <Hook text={order.hook.text} plate={order.hook.plate ?? 'lime'} />
               </Sequence>

@@ -5,7 +5,7 @@ import { homedir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { Ajv } from 'ajv';
 import YAML from 'yaml';
-import { listicleTimeline, spotTimeline } from '../../src/order/timeline.ts';
+import { listicleTimeline, spotSfx, spotTimeline } from '../../src/order/timeline.ts';
 import type { PromoOrder } from '../../src/order/types.ts';
 import { FPS } from '../../src/brand/tokens.ts';
 
@@ -105,6 +105,11 @@ export function checkOrder(file: string): Check {
       media.push(order.voice.src);
     }
   }
+  if (order.format === 'spot')
+    for (const src of new Set(spotSfx(order, 0.2).map((x) => x.src))) {
+      if (existsSync(join(base, src))) media.push(src);
+      else errors.push(`звук: нет файла ${src}, сначала pnpm run sfx`);
+    }
   if (order.requests?.length) warnings.push(`в заказе есть запросы к движку: ${order.requests.join('; ')}`);
   return { order, errors, warnings, media };
 }

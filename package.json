@@ -14,11 +14,15 @@
     "smoke": "node scripts/smoke.ts",
     "studio": "remotion studio src/index.ts",
     "typecheck": "tsc --noEmit",
-    "voice": "node scripts/voice.ts"
+    "voice": "node scripts/voice.ts",
+    "sfx": "node scripts/sfx.ts"
   },
   "dependencies": {
+    "@fontsource/caveat": "5.3.0",
     "@fontsource/dela-gothic-one": "5.3.0",
     "@fontsource/onest": "5.3.1",
+    "@fontsource/oswald": "5.3.0",
+    "@fontsource/unbounded": "5.3.0",
     "@remotion/bundler": "4.0.537",
     "@remotion/cli": "4.0.537",
     "@remotion/renderer": "4.0.537",

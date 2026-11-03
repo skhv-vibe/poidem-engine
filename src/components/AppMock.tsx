@@ -77,7 +77,7 @@ export const AppMock: React.FC<{ card: AppCard; next?: AppCard; swipeAt: number 
           width: SCREEN_W,
           height: SCREEN_H,
           transformOrigin: 'top left',
-          transform: `scale(${SCALE}) translateY(${interpolate(enter, [0, 1], [900, 0])}px)`,
+          transform: `scale(${SCALE}) translateY(${interpolate(enter, [0, 1], [900, 0])}px) rotate(${interpolate(enter, [0, 1], [8, 0])}deg)`,
         }}
       >
         <div

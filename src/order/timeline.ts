@@ -92,3 +92,31 @@ export function keyFrames(order: PromoOrder): [string, number][] {
     ['99-end', tl.end.from + tl.end.duration - 5],
   ];
 }
+
+export type Sfx = { src: string; frame: number; volume: number };
+const SFX = (name: string) => `library/_sfx/${name}.mp3`;
+
+// Звуки «одного места» расставляются сами: поп наклейки хука, whoosh на «хлёсте», поп на акцентных словах,
+// swipe на шторке, tap + stamp + swipe на «Хочу», chime на логотипе. Громкость относительно голоса.
+export function spotSfx(order: SpotOrder, voiceOffset: number): Sfx[] {
+  if (order.sfx === false) return [];
+  const t = spotTimeline(order);
+  const out: Sfx[] = [{ src: SFX('pop'), frame: 6, volume: 0.5 }];
+  order.shots.forEach((s, i) => {
+    if (s.transition === 'whip') out.push({ src: SFX('whoosh'), frame: Math.max(0, t.shots[i].from - 3), volume: 0.45 });
+  });
+  const accent = order.style?.accent ?? [];
+  const kinetic = order.style?.subs && order.style.subs !== 'quiet';
+  if (kinetic)
+    for (const w of order.voice?.words ?? []) {
+      const clean = w.text.replace(/[«»".,!?:;—]/gu, '').toLowerCase();
+      if (accent.some((a) => clean.startsWith(a.toLowerCase())) && (w.start + voiceOffset) * FPS < t.app.from)
+        out.push({ src: SFX('pop'), frame: Math.round((w.start + voiceOffset) * FPS), volume: 0.3 });
+    }
+  out.push({ src: SFX('swipe'), frame: t.app.from - Math.round(t.wipe / 2), volume: 0.5 });
+  out.push({ src: SFX('tap'), frame: t.app.from + t.app.swipeAt - 3, volume: 0.6 });
+  out.push({ src: SFX('stamp'), frame: t.app.from + t.app.swipeAt, volume: 0.55 });
+  out.push({ src: SFX('swipe'), frame: t.app.from + t.app.swipeAt + 2, volume: 0.3 });
+  out.push({ src: SFX('chime'), frame: t.end.from + 7, volume: 0.45 });
+  return out;
+}

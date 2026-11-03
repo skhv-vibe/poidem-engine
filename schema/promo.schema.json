@@ -133,6 +133,25 @@
           "dur": {
             "type": "number",
             "exclusiveMinimum": 0
+          },
+          "zoom": {
+            "enum": [
+              "in",
+              "out",
+              "punch",
+              "none"
+            ]
+          },
+          "speed": {
+            "type": "number",
+            "minimum": 0.25,
+            "maximum": 4
+          },
+          "transition": {
+            "enum": [
+              "cut",
+              "whip"
+            ]
           }
         },
         "additionalProperties": false
@@ -180,6 +199,42 @@
           "type": "string"
         }
       }
+    },
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subs": {
+          "enum": [
+            "quiet",
+            "poster",
+            "mix",
+            "scatter"
+          ]
+        },
+        "grade": {
+          "enum": [
+            "none",
+            "warm",
+            "vivid",
+            "film"
+          ]
+        },
+        "accent": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "music_volume": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "sfx": {
+      "type": "boolean"
     }
   },
   "definitions": {

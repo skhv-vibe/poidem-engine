@@ -3,7 +3,7 @@
 // перед разрывом не стоит короткое служебное слово («в», «и», «не»…): оно уходит к следующей фразе.
 import type { Word } from './types.ts';
 
-export type Phrase = { text: string; start: number; end: number };
+export type Phrase = { text: string; start: number; end: number; words: Word[] };
 
 const BREAK = /[,.!?:;…]$/;
 const CLITIC = /^(в|во|на|с|со|к|ко|по|за|из|до|без|для|и|а|но|не|от|о|об|у|её|его|если)$/iu;
@@ -42,6 +42,7 @@ export function toPhrases(words: Word[]): Phrase[] {
       .toLowerCase(),
     start: c[0].start,
     end: c[c.length - 1].end,
+    words: c.map((w) => ({ ...w, text: w.text.replace(/[.!?:;,…]+$/u, '').replace(/[«»"]/gu, '') })),
   }));
   // Фраза держится до начала следующей (без мигания в коротких паузах), но не дольше 0,6 с после конца.
   return out.map((p, i) => ({ ...p, end: Math.min(out[i + 1]?.start ?? p.end + 0.6, p.end + 0.6) }));

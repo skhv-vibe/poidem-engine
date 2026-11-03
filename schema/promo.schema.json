@@ -4,20 +4,56 @@
   "description": "Пути к файлам указываются от корня poidem-content. Контракт: docs/contract.md.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "format", "reel", "hook", "items", "end"],
+  "required": [
+    "version",
+    "format",
+    "reel",
+    "hook",
+    "end"
+  ],
   "properties": {
-    "version": { "const": 1 },
-    "format": { "enum": ["listicle"] },
-    "reel": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[a-z0-9-]+$" },
-    "music": { "type": "string" },
+    "version": {
+      "const": 1
+    },
+    "format": {
+      "enum": [
+        "listicle",
+        "spot"
+      ]
+    },
+    "reel": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[a-z0-9-]+$"
+    },
+    "music": {
+      "type": "string"
+    },
     "hook": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["text"],
+      "required": [
+        "text"
+      ],
       "properties": {
-        "text": { "type": "string", "minLength": 1, "maxLength": 60 },
-        "plate": { "enum": ["lime", "sticker"], "default": "lime" },
-        "clip": { "$ref": "#/definitions/clip" }
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "plate": {
+          "enum": [
+            "lime",
+            "sticker"
+          ],
+          "default": "lime"
+        },
+        "clip": {
+          "$ref": "#/definitions/clip"
+        },
+        "dur": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
       }
     },
     "items": {
@@ -27,33 +63,240 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "clips"],
+        "required": [
+          "name",
+          "clips"
+        ],
         "properties": {
-          "name": { "type": "string", "minLength": 1, "maxLength": 40 },
-          "district": { "type": "string", "maxLength": 30 },
-          "clips": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/clip" } }
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "district": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "clips": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/definitions/clip"
+            }
+          }
         }
       }
     },
-    "demo": { "$ref": "#/definitions/clip" },
+    "demo": {
+      "$ref": "#/definitions/clip"
+    },
     "end": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["line"],
-      "properties": { "line": { "type": "string", "minLength": 1, "maxLength": 40 } }
+      "required": [
+        "line"
+      ],
+      "properties": {
+        "line": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        }
+      }
     },
-    "requests": { "type": "array", "items": { "type": "string" } }
+    "requests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "shots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "src",
+          "dur"
+        ],
+        "properties": {
+          "src": {
+            "type": "string"
+          },
+          "in": {
+            "type": "number",
+            "minimum": 0
+          },
+          "out": {
+            "type": "number"
+          },
+          "dur": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "app": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "card"
+      ],
+      "properties": {
+        "card": {
+          "$ref": "#/definitions/card"
+        },
+        "next": {
+          "$ref": "#/definitions/card"
+        },
+        "dur": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "swipe_at": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "voice_id"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "voice_id": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        }
+      }
+    }
   },
   "definitions": {
     "clip": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["src"],
+      "required": [
+        "src"
+      ],
       "properties": {
-        "src": { "type": "string", "minLength": 1 },
-        "in": { "type": "number", "minimum": 0 },
-        "out": { "type": "number", "exclusiveMinimum": 0 }
+        "src": {
+          "type": "string",
+          "minLength": 1
+        },
+        "in": {
+          "type": "number",
+          "minimum": 0
+        },
+        "out": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "photo",
+        "title",
+        "meta"
+      ],
+      "properties": {
+        "photo": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "meta": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "line": {
+          "type": "string",
+          "maxLength": 60
+        }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "format": {
+            "const": "listicle"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "items"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "shots"
+              ]
+            },
+            {
+              "required": [
+                "app"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "format": {
+            "const": "spot"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "shots",
+          "app"
+        ],
+        "properties": {
+          "hook": {
+            "required": [
+              "text",
+              "clip"
+            ],
+            "type": "object"
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "items"
+              ]
+            },
+            {
+              "required": [
+                "demo"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { bundle } from '@remotion/bundler';
 import { renderMedia, selectComposition } from '@remotion/renderer';
 import { FPS } from '../src/brand/tokens.ts';
-import { listicleTimeline } from '../src/order/timeline.ts';
+import { keyFrames, totalFrames } from '../src/order/timeline.ts';
 import { ROOT, checkOrder, mediaRoot, resolveOrder } from './lib/order.ts';
 
 const args = process.argv.slice(2);
@@ -71,7 +71,7 @@ try {
   const serveUrl = await bundle({ entryPoint: join(ROOT, 'src', 'index.ts'), publicDir: stage, outDir: join(ROOT, '.cache', 'bundle', order.reel) });
   process.stderr.write('готово\n');
   const inputProps = { order };
-  const composition = await selectComposition({ serveUrl, id: 'Listicle', inputProps, logLevel: 'error' });
+  const composition = await selectComposition({ serveUrl, id: order.format === 'spot' ? 'Spot' : 'Listicle', inputProps, logLevel: 'error' });
   const mp4 = join(renderDir, 'reel.mp4');
   let last = -1;
   await renderMedia({
@@ -93,26 +93,23 @@ try {
   });
 
   // Контрольные кадры: середина каждого места, демо и концовки; лист всего ролика по 2 кадра в секунду.
-  const tl = listicleTimeline(order);
+  const total = totalFrames(order);
   const framesDir = join(renderDir, 'frames');
   rmSync(framesDir, { recursive: true, force: true });
   mkdirSync(framesDir, { recursive: true });
-  const points: [string, number][] = [
-    ['00-hook', tl.hook.duration * 0.7],
-    ...tl.items.map((s, i): [string, number] => [`${String(i + 1).padStart(2, '0')}-item-${s.number}`, s.from + s.duration - 12]),
-    ...(tl.demo ? [['90-demo', tl.demo.from + tl.demo.duration / 2] as [string, number]] : []),
-    ['99-end', tl.end.from + tl.end.duration - 5],
-  ];
+  const points = keyFrames(order);
   for (const [name, frame] of points)
     execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(frame / FPS), '-i', mp4, '-frames:v', '1', join(framesDir, `${name}.png`)]);
-  const rows = Math.ceil((tl.total / FPS) * 2 / 8);
+  const rows = Math.ceil((total / FPS) * 2 / 8);
   execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', mp4, '-vf', `fps=2,scale=180:320,tile=8x${rows}`, '-frames:v', '1', join(renderDir, 'contact.png')]);
 
-  const secs = (tl.total / FPS).toFixed(1);
+  const secs = (total / FPS).toFixed(1);
   const mb = (statSync(mp4).size / 1e6).toFixed(1);
   const lines = [
     `- Файл: \`render/reel.mp4\`, ${secs} с, ${mb} МБ, 1080×1920, ${FPS} fps`,
-    `- Мест: ${order.items.length}, демо: ${order.demo ? 'да' : 'нет'}, музыка: ${order.music ? 'да' : 'нет'}`,
+    order.format === 'spot'
+      ? `- Формат: одно место, кадров: ${order.shots.length}, голос: ${order.voice ? 'да' : 'нет'}, музыка: ${order.music ? 'да' : 'нет'}`
+      : `- Мест: ${order.items.length}, демо: ${order.demo ? 'да' : 'нет'}, музыка: ${order.music ? 'да' : 'нет'}`,
     `- Время рендера: ${((Date.now() - started) / 1000).toFixed(0)} с`,
     `- Контрольные кадры: \`render/frames/\`, лист: \`render/contact.png\``,
   ];

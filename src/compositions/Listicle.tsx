@@ -9,9 +9,9 @@ import { EndCard } from '../components/EndCard.tsx';
 import { HochuStamp, SwipeOut } from '../components/HochuSwipe.tsx';
 import { Sticker } from '../components/Sticker.tsx';
 import { listicleTimeline } from '../order/timeline.ts';
-import type { PromoOrder } from '../order/types.ts';
+import type { ListicleOrder } from '../order/types.ts';
 
-export const Listicle: React.FC<{ order: PromoOrder }> = ({ order }) => {
+export const Listicle: React.FC<{ order: ListicleOrder }> = ({ order }) => {
   waitForFonts();
   const { durationInFrames } = useVideoConfig();
   const tl = listicleTimeline(order);
@@ -84,12 +84,18 @@ export const Listicle: React.FC<{ order: PromoOrder }> = ({ order }) => {
   );
 };
 
-const Hook: React.FC<{ text: string; plate: 'lime' | 'sticker' }> = ({ text, plate }) => (
+// Кегль хука ужимается, чтобы самая длинная строка (или слово) влезла без переноса: 11 знаков на 100 px.
+const hookSize = (text: string) => {
+  const longest = Math.max(...text.split(/\n/).map((l) => (text.includes('\n') ? l.length : Math.max(...l.split(/\s/).map((w) => w.length)))));
+  return Math.min(100, Math.floor((100 * 11) / Math.max(longest, 1)));
+};
+
+export const Hook: React.FC<{ text: string; plate: 'lime' | 'sticker' }> = ({ text, plate }) => (
   <AbsoluteFill style={{ alignItems: 'center', paddingTop: SAFE.top + 160, paddingLeft: 70, paddingRight: 70 }}>
     <Sticker
       bg={plate === 'lime' ? C.lime : C.sticker}
       rotate={-3}
-      style={{ fontFamily: FONT.display, fontSize: 100, lineHeight: 1.08, padding: '30px 40px 22px', textAlign: 'center', whiteSpace: 'pre-line', maxWidth: 940 }}
+      style={{ fontFamily: FONT.display, fontSize: hookSize(text), lineHeight: 1.08, padding: '30px 40px 22px', textAlign: 'center', whiteSpace: 'pre-line', maxWidth: 940 }}
     >
       {typo(text)}
     </Sticker>
@@ -97,7 +103,7 @@ const Hook: React.FC<{ text: string; plate: 'lime' | 'sticker' }> = ({ text, pla
 );
 
 // Короткие предлоги и союзы не висят в конце строки: неразрывный пробел после них. Перенос вручную — \n.
-const typo = (t: string) => t.replace(/(^|[\s\u00a0])(без|в|во|на|с|со|к|ко|по|за|из|до|для|и|а|но|не|от|о|об|у)\s+/giu, '$1$2\u00a0');
+export const typo = (t: string) => t.replace(/(^|[\s\u00a0])(без|в|во|на|с|со|к|ко|по|за|из|до|для|и|а|но|не|от|о|об|у)\s+/giu, '$1$2\u00a0');
 
 const ItemLabel: React.FC<{ number: number; name: string; district?: string }> = ({ number, name, district }) => (
   <AbsoluteFill style={{ alignItems: 'center', paddingTop: SAFE.top + 120 }}>
